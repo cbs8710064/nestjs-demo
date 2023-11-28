@@ -8,13 +8,17 @@ import {
   Patch,
   Param,
   Delete,
+  HttpException,
+  UseFilters,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ConfigService } from '@nestjs/config';
 import { User } from './user.entity';
 import { GetUserDto } from './dto/get-user.dto';
+import { TypeormFilter } from 'src/filters/typeorm.filter';
 
 @Controller('user')
+@UseFilters(new TypeormFilter())
 export class UserController {
   constructor(
     private userService: UserService,
@@ -43,11 +47,12 @@ export class UserController {
   }
 
   @Post()
-  addUser(@Body() userdto: any, @Headers() headers: any): any {
+  async addUser(@Body() userdto: any, @Headers() headers: any): Promise<any> {
     console.log('param12', userdto);
     console.log('headers', headers);
     const user = userdto as User;
-    return this.userService.create(user);
+    const res = await this.userService.create(user);
+    return res;
   }
 
   @Patch('/:id')
