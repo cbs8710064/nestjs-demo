@@ -76,8 +76,12 @@ export class UserService {
   update(id: number, user: Partial<User>) {
     return this.userRespository.update(id, user);
   }
-  remove(id: number) {
-    return this.userRespository.delete(id);
+  async remove(id: number) {
+    // delete可以用来删除一些不太重要的数据
+    // return this.userRespository.delete(id);
+    // 删除建议用remove，可以删除数据实体
+    const user = await this.findOne(id);
+    return this.userRespository.remove(user);
   }
   // 联合查询
   findProfile(id: number) {
@@ -94,7 +98,7 @@ export class UserService {
     const user = await this.findOne(id);
     return this.logsRespository.find({
       where: {
-        user,
+        user: user.logs,
       },
       relations: {
         user: true,

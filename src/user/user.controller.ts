@@ -63,7 +63,8 @@ export class UserController {
     const user = { username: 'Jason' } as User;
     return this.userService.update(id, user);
   }
-
+  // 1.controller 名 vs services 名 vs repository名应该怎么取
+  // 2.typeorm里面delete与remove的区别
   @Delete('/:id')
   deleteUser(@Param('id') id: number): any {
     // :TODO  传递参数id

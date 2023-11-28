@@ -9,6 +9,8 @@ import {
   ManyToMany,
   JoinTable,
   OneToOne,
+  AfterInsert,
+  AfterRemove,
 } from 'typeorm';
 
 @Entity()
@@ -32,4 +34,15 @@ export class User {
 
   @OneToOne(() => Profile, (profile) => profile.user)
   profile: Profile;
+
+  // service层调用save插入数据的时候触发的钩子
+  @AfterInsert()
+  afterInsert() {
+    console.log('after in sert');
+  }
+  // service层调用remove删除数据的时候触发的钩子
+  @AfterRemove()
+  afterRemove() {
+    console.log('after remove');
+  }
 }
