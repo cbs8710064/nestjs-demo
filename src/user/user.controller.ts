@@ -9,6 +9,7 @@ import {
   Param,
   Delete,
   HttpException,
+  UnauthorizedException,
   UseFilters,
 } from '@nestjs/common';
 import { UserService } from './user.service';
@@ -16,6 +17,7 @@ import { ConfigService } from '@nestjs/config';
 import { User } from './user.entity';
 import { GetUserDto } from './dto/get-user.dto';
 import { TypeormFilter } from 'src/filters/typeorm.filter';
+import { UnorderedBulkOperation } from 'typeorm';
 
 @Controller('user')
 @UseFilters(new TypeormFilter())
@@ -56,12 +58,21 @@ export class UserController {
   }
 
   @Patch('/:id')
-  updateUser(@Body() dto: any, @Param('id') id: number): any {
-    // todo 传递参数id
-    // todo 异常处理
-    console.log('update user', id);
-    const user = { username: 'Jason' } as User;
-    return this.userService.update(id, user);
+  updateUser(
+    @Body() dto: any,
+    @Param('id') id: number,
+    @Headers('Authorization') headers: any,
+  ): any {
+    // 权限1：判断用户是否是自己
+    // 权限2：判断用户是否有更新user的权限
+    // 返回数据：不能包含敏感的password等信息
+    console.log('header', headers);
+    if (id == headers) {
+      const user = dto as User;
+      return this.userService.update(id, user);
+    } else {
+      throw new UnauthorizedException();
+    }
   }
   // 1.controller 名 vs services 名 vs repository名应该怎么取
   // 2.typeorm里面delete与remove的区别
